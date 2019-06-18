@@ -33,13 +33,12 @@ const typeDefs = gql`
 
 async function getPosts() {
 	let allPosts = []
-	let posts = await rra.list(`${__dirname}/posts`, {
-		include: [ '.md' ]
-	})
-
-	for (var post of posts) {
-		const file = fs.readFileSync(post.fullname)
-		const parsedPost = matter(file)
+	await rra.list(`${__dirname}/posts`, {
+		include: [ '.md' ],
+		readContent: true,
+		encoding: 'utf8'
+	}, (post) => {
+		const parsedPost = matter(post.data)
 		delete parsedPost.isEmpty
 		delete parsedPost.excerpt
 
@@ -47,7 +46,7 @@ async function getPosts() {
 			...parsedPost.data,
 			...parsedPost
 		})
-	}
+	})
 
 	return allPosts
 }
@@ -70,13 +69,12 @@ async function getPost(name) {
 
 async function getPages() {
 	let allPages = []
-	let pages = await rra.list(`${__dirname}/pages`, {
-		include: [ '.md' ]
-	})
-
-	for (var page of pages) {
-		const file = fs.readFileSync(page.fullname)
-		const parsedPages = matter(file)
+	await rra.list(`${__dirname}/pages`, {
+		include: [ '.md' ],
+		readContent: true,
+		encoding: 'utf8'
+	}, (page) => {
+		const parsedPages = matter(page.data)
 		delete parsedPages.isEmpty
 		delete parsedPages.excerpt
 
@@ -84,7 +82,7 @@ async function getPages() {
 			...parsedPages.data,
 			...parsedPages
 		})
-	}
+	})
 
 	return allPages
 }
