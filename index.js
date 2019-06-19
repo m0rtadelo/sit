@@ -33,19 +33,21 @@ const typeDefs = gql`
 
 async function getPosts() {
 	let allPosts = []
-	await rra.list(`${__dirname}/posts`, {
-		include: [ '.md' ],
+	await rra.list(`${__dirname}/posts/`, {
+		extensions: true,
 		readContent: true,
 		encoding: 'utf8'
-	}, (post) => {
-		const parsedPost = matter(post.data)
-		delete parsedPost.isEmpty
-		delete parsedPost.excerpt
+	}, (post) => {	
+		if(!post.isDirectory && post.extension === '.md'){
+			const parsedPost = matter(post.data)
+			delete parsedPost.isEmpty
+			delete parsedPost.excerpt
 
-		allPosts.push({
-			...parsedPost.data,
-			...parsedPost
-		})
+			allPosts.push({
+				...parsedPost.data,
+				...parsedPost
+			})
+		}
 	})
 
 	return allPosts
@@ -69,19 +71,21 @@ async function getPost(name) {
 
 async function getPages() {
 	let allPages = []
-	await rra.list(`${__dirname}/pages`, {
-		include: [ '.md' ],
+	await rra.list(`${__dirname}/pages/`, {
+		extensions: true,
 		readContent: true,
 		encoding: 'utf8'
 	}, (page) => {
-		const parsedPages = matter(page.data)
-		delete parsedPages.isEmpty
-		delete parsedPages.excerpt
+		if(!page.isDirectory && page.extension === '.md'){
+			const parsedPages = matter(page.data)
+			delete parsedPages.isEmpty
+			delete parsedPages.excerpt
 
-		allPages.push({
-			...parsedPages.data,
-			...parsedPages
-		})
+			allPages.push({
+				...parsedPages.data,
+				...parsedPages
+			})
+		}
 	})
 
 	return allPages
